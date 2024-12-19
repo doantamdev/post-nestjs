@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { User } from './user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -18,5 +18,26 @@ export class UserService {
 
   findById(id: number) {
     return this.userRepo.findOneBy({ id });
+  }
+
+  async updateById(id: number, requestBody: any) {
+    let user = await this.findById(id);
+
+    if (!user) {
+      throw new NotFoundException('User does not exits');
+    }
+
+    user = { ...user, ...requestBody };
+    return this.userRepo.save(user);
+  }
+
+  async deleteById(id: number) {
+    let user = await this.findById(id);
+
+    if (!user) {
+      throw new NotFoundException('User does not exits');
+    }
+
+    return this.userRepo.remove(user);
   }
 }
