@@ -1,20 +1,26 @@
+import { CreateUserDto } from './dtos/createUser.dto';
+import { UpdateUserDto } from './dtos/updateUser.dto ';
 import { UserService } from './user.service';
 import {
   Body,
+  ClassSerializerInterceptor,
   Controller,
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Post,
   Put,
+  UseInterceptors,
 } from '@nestjs/common';
 
 @Controller('users')
+@UseInterceptors(ClassSerializerInterceptor)
 export class UserController {
   constructor(private UserService: UserService) {}
 
   @Post()
-  createUser(@Body() requestBody: any) {
+  createUser(@Body() requestBody: CreateUserDto) {
     return this.UserService.create(requestBody);
   }
 
@@ -24,17 +30,20 @@ export class UserController {
   }
 
   @Get('/detail/:id')
-  getUserById(@Param('id') id: number) {
+  getUserById(@Param('id', ParseIntPipe) id: number) {
     return this.UserService.findById(id);
   }
 
   @Put('/update/:id')
-  updateUser(@Param('id') id: number, @Body() requestBody: any) {
+  updateUser(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() requestBody: UpdateUserDto,
+  ) {
     return this.UserService.updateById(id, requestBody);
   }
 
   @Delete('/delete/:id')
-  deleteUser(@Param('id') id: number) {
+  deleteUser(@Param('id', ParseIntPipe) id: number) {
     return this.UserService.deleteById(id);
   }
 }
