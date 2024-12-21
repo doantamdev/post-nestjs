@@ -1,3 +1,4 @@
+import { LoggingInterceptor } from 'src/interceptors/logging.interceptor';
 import { CreateUserDto } from './dtos/createUser.dto';
 import { UpdateUserDto } from './dtos/updateUser.dto ';
 import { UserService } from './user.service';
@@ -16,6 +17,7 @@ import {
 
 @Controller('users')
 @UseInterceptors(ClassSerializerInterceptor)
+@UseInterceptors(LoggingInterceptor)
 export class UserController {
   constructor(private UserService: UserService) {}
 
