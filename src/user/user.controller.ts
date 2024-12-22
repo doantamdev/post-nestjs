@@ -12,8 +12,10 @@ import {
   ParseIntPipe,
   Post,
   Put,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
+import { AuthGuard } from 'src/guards/auth.guard';
 
 @Controller('users')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -45,6 +47,7 @@ export class UserController {
   }
 
   @Delete('/delete/:id')
+  @UseGuards(AuthGuard)
   deleteUser(@Param('id', ParseIntPipe) id: number) {
     return this.UserService.deleteById(id);
   }
