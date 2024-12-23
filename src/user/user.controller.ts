@@ -1,3 +1,4 @@
+import { AuthService } from './auth.service';
 import { LoggingInterceptor } from 'src/interceptors/logging.interceptor';
 import { CreateUserDto } from './dtos/createUser.dto';
 import { UpdateUserDto } from './dtos/updateUser.dto ';
@@ -16,26 +17,26 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { AuthGuard } from 'src/guards/auth.guard';
+import { RegisterUserDto } from './dtos/registerUser.dto';
+import { LoginUserDto } from './dtos/loginUser.dto';
 
 @Controller('users')
 @UseInterceptors(ClassSerializerInterceptor)
 @UseInterceptors(LoggingInterceptor)
 export class UserController {
-  constructor(private UserService: UserService) {}
-
-  @Post()
-  createUser(@Body() requestBody: CreateUserDto) {
-    return this.UserService.create(requestBody);
-  }
+  constructor(
+    private userService: UserService,
+    private authService: AuthService,
+  ) {}
 
   @Get('/all')
   getAllUser() {
-    return this.UserService.findAll();
+    return this.userService.findAll();
   }
 
   @Get('/detail/:id')
   getUserById(@Param('id', ParseIntPipe) id: number) {
-    return this.UserService.findById(id);
+    return this.userService.findById(id);
   }
 
   @Put('/update/:id')
@@ -43,12 +44,22 @@ export class UserController {
     @Param('id', ParseIntPipe) id: number,
     @Body() requestBody: UpdateUserDto,
   ) {
-    return this.UserService.updateById(id, requestBody);
+    return this.userService.updateById(id, requestBody);
   }
 
   @Delete('/delete/:id')
   @UseGuards(AuthGuard)
   deleteUser(@Param('id', ParseIntPipe) id: number) {
-    return this.UserService.deleteById(id);
+    return this.userService.deleteById(id);
+  }
+
+  @Post('/register')
+  registerUser(@Body() requestBody: RegisterUserDto) {
+    return this.authService.register(requestBody);
+  }
+
+  @Get('/login')
+  loginUser(@Body() requestBody: LoginUserDto) {
+    return this.authService.login(requestBody);
   }
 }
