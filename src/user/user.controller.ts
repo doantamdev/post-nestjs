@@ -35,6 +35,7 @@ export class UserController {
   }
 
   @Get('/detail/:id')
+  @UseGuards(AuthGuard)
   getUserById(@Param('id', ParseIntPipe) id: number) {
     return this.userService.findById(id);
   }
