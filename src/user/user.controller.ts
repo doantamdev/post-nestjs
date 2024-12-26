@@ -13,12 +13,15 @@ import {
   ParseIntPipe,
   Post,
   Put,
+  Request,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { AuthGuard } from 'src/guards/auth.guard';
 import { RegisterUserDto } from './dtos/registerUser.dto';
 import { LoginUserDto } from './dtos/loginUser.dto';
+import { CurrentUser } from './decorators/user.decorator';
+import { User } from './user.entity';
 
 @Controller('users')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -38,6 +41,12 @@ export class UserController {
   @UseGuards(AuthGuard)
   getUserById(@Param('id', ParseIntPipe) id: number) {
     return this.userService.findById(id);
+  }
+
+  @Get('/current-user')
+  @UseGuards(AuthGuard)
+  getCurrentUser(@CurrentUser() currentUser: User) {
+    return currentUser;
   }
 
   @Put('/update/:id')
