@@ -5,5 +5,8 @@ export class UpdateUserDto {
   email: string;
 
   @IsNotEmpty()
+  username: string;
+
+  @IsNotEmpty()
   password: string;
 }

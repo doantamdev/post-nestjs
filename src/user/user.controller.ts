@@ -22,6 +22,7 @@ import { RegisterUserDto } from './dtos/registerUser.dto';
 import { LoginUserDto } from './dtos/loginUser.dto';
 import { CurrentUser } from './decorators/user.decorator';
 import { User } from './user.entity';
+import { RoleGuard } from 'src/guards/role.guard';
 
 @Controller('users')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -38,6 +39,7 @@ export class UserController {
   }
 
   @Get('/detail/:id')
+  @UseGuards(new RoleGuard(['USER']))
   @UseGuards(AuthGuard)
   getUserById(@Param('id', ParseIntPipe) id: number) {
     return this.userService.findById(id);
@@ -50,11 +52,13 @@ export class UserController {
   }
 
   @Put('/update/:id')
+  @UseGuards(AuthGuard)
   updateUser(
     @Param('id', ParseIntPipe) id: number,
     @Body() requestBody: UpdateUserDto,
+    @CurrentUser() currentUser: User,
   ) {
-    return this.userService.updateById(id, requestBody);
+    return this.userService.updateById(id, requestBody, currentUser);
   }
 
   @Delete('/delete/:id')

@@ -2,9 +2,9 @@ import { Injectable, NotFoundException, Request } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { User } from './user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateUserDto } from './dtos/createUser.dto';
 import { UpdateUserDto } from './dtos/updateUser.dto ';
 import { RegisterUserDto } from './dtos/registerUser.dto';
+import { Permission } from 'src/helpers/checkPermission.helper';
 
 @Injectable()
 export class UserService {
@@ -27,12 +27,14 @@ export class UserService {
     return this.userRepo.findOneBy({ email });
   }
 
-  async updateById(id: number, requestBody: UpdateUserDto) {
+  async updateById(id: number, requestBody: UpdateUserDto, currentUser: User) {
     let user = await this.findById(id);
 
     if (!user) {
       throw new NotFoundException('User does not exits');
     }
+
+    Permission.check(id, currentUser);
 
     user = { ...user, ...requestBody };
     return this.userRepo.save(user);
