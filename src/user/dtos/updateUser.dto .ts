@@ -1,4 +1,5 @@
 import { IsEmail, IsNotEmpty } from 'class-validator';
+import { ROLES } from '../user.entity';
 
 export class UpdateUserDto {
   @IsEmail()
@@ -9,4 +10,6 @@ export class UpdateUserDto {
 
   @IsNotEmpty()
   password: string;
+
+  role: ROLES;
 }

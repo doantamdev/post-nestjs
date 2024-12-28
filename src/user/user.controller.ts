@@ -34,12 +34,12 @@ export class UserController {
   ) {}
 
   @Get('/all')
+  @UseGuards(new RoleGuard(['ADMIN', 'MOD']))
   getAllUser() {
     return this.userService.findAll();
   }
 
   @Get('/detail/:id')
-  @UseGuards(new RoleGuard(['USER']))
   @UseGuards(AuthGuard)
   getUserById(@Param('id', ParseIntPipe) id: number) {
     return this.userService.findById(id);
@@ -52,6 +52,7 @@ export class UserController {
   }
 
   @Put('/update/:id')
+  @UseGuards(new RoleGuard(['USER', 'ADMIN', 'MOD']))
   @UseGuards(AuthGuard)
   updateUser(
     @Param('id', ParseIntPipe) id: number,
@@ -62,9 +63,13 @@ export class UserController {
   }
 
   @Delete('/delete/:id')
+  @UseGuards(new RoleGuard(['USER', 'ADMIN', 'MOD']))
   @UseGuards(AuthGuard)
-  deleteUser(@Param('id', ParseIntPipe) id: number) {
-    return this.userService.deleteById(id);
+  deleteUser(
+    @Param('id', ParseIntPipe) id: number,
+    @CurrentUser() currentUser: User,
+  ) {
+    return this.userService.deleteById(id, currentUser);
   }
 
   @Post('/register')
